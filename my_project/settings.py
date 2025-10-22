@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,9 +43,35 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework_simplejwt',
     'wallet_management',
     'user',
+    'transactions_management',
+    'drf_spectacular',
+    'django_filters'
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [ #specifies the authentication classes that DRF should use to authenticate incoming requests.
+        'rest_framework_simplejwt.authentication.JWTAuthentication', # Responsible for decoding your token
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [ 
+        'rest_framework.permissions.IsAuthenticated', # Makes all my url or endpoint protected in such a way that it needs a token to access them 
+    ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'
+    ]
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'SwiftBank Digital Banking',
+    'DESCRIPTION': 'Comprehensive API documentation for my banking system',
+    'VERSION': '1.0.0',
+    "SERVE_INCLUDE_SCHEMA": False, #Hide schema endpoint from swagger list
+    "COMPONENT_SPLIT_REQUEST": True,
+    "SORT_OPERATIONS": True
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -52,6 +83,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
 AUTH_USER_MODEL = 'user.User' 
 
 ROOT_URLCONF = 'my_project.urls'
@@ -59,7 +91,7 @@ ROOT_URLCONF = 'my_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -72,6 +104,15 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'my_project.wsgi.application'
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1), # Set expiration for access token
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7), # Set expiration for refresh token
+    'SIGNING_KEY': SECRET_KEY, # Your django key to give the token a unique signature or to use the secret key to sign the token
+    'AUTH_HEADER_TYPES': ('Bearer',), # The type of authorization header to expect
+    'ALGORITHM': 'HS256' # The algorithm used to sign the token. The formula on how the token is signed
+
+}
 
 
 # Database
@@ -121,7 +162,23 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+#SMTP Configuration
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "sannimistura1211@gmail.com"
+EMAIL_HOST_PASSWORD = os.getenv("APP_PASSWORD")  # Fetching from .env file
+

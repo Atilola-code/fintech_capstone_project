@@ -1,65 +1,70 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, permissions
 from .models import Wallet
 from .serializers import WalletSerializer
-from rest_framework.permissions import AllowAny
+from drf_spectacular.utils import extend_schema,OpenApiExample
+from user.permissions import CanCreateWallet
 
-# Create your views here.
 
+@extend_schema(
+    tags=["Wallet Management"],
+    summary="Retrieve user wallet or specific wallet by ID and prevent deletion of user wallet",
+    request=WalletSerializer,
+    responses={
+        200: WalletSerializer,
+        400: dict,
+        404: dict,
+        405: dict
+    },
+    examples=[
+        OpenApiExample(
+            name="Get wallet info",
+            description="Example response for fetching wallet details",
+            value={
+                "message": "Wallet information retrieved successfully.",
+                "data": {
+                    "id": 1,
+                    "user": 3,
+                    "balance": 1000.50,
+                    "currency": "string",
+                    "created_at": "2025-10-06T12:00:00Z"
+                }
+            }
+        ),
+    ]
+)
 class WalletManagement(APIView):
-    permission_classes = [AllowAny]
-    def get(self, request, id=None):
-        if id:
-            try:
-                wallet_data = Wallet.objects.get(id=id)
-            except Wallet.DoesNotExist:
-                return Response({"message": "Wallet not found."}, status=status.HTTP_404_NOT_FOUND)
-            serializer = WalletSerializer(wallet_data)
-            return Response({"message": "Wallet information retrieved successfully.", "data": serializer.data}, status=status.HTTP_200_OK)
-        
-        # If no ID is provided, return all wallets
-        wallets =  Wallet.objects.all()
-        serializer = WalletSerializer(wallets, many=True)
-        return Response({"message": "Wallet information retrieved successfully.", "data": serializer.data}, status=status.HTTP_200_OK)
-    
-    def post(self, request, id=None):
-        wallet_data = request.data
-        serializer = WalletSerializer(data=wallet_data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"message": "Wallet information created successfully."}, status=status.HTTP_201_CREATED)
-        else:
-            return Response({"message": "Invalid data provided.", "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-    
-    def put(self, request, id=None):
-        try:
-            wallet_data = Wallet.objects.get(id=id)
-        except Wallet.DoesNotExist:
-            return Response({"message": "Wallet not found."}, status=status.HTTP_404_NOT_FOUND)
-        serializer = WalletSerializer(wallet_data, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"message": "Wallet information updated successfully."}, status=status.HTTP_200_OK)
-        else:
-            return Response({"message": "Invalid data provided.", "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-    def patch(self, request, id=None):
-        try:
-            wallet_data = Wallet.objects.get(id=id)
-        except Wallet.DoesNotExist:
-            return Response({"message": "Wallet not found."}, status=status.HTTP_404_NOT_FOUND)
-        serializer = WalletSerializer(wallet_data, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"message": "Wallet information updated successfully."}, status=status.HTTP_200_OK)
-        else:
-            return Response({"message": "Invalid data provided.", "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-    
-    def delete(self, request, id=None):
-        try:
-            wallet_data = Wallet.objects.get(id=id)
-        except Wallet.DoesNotExist:
-            return Response({"message": "Wallet does not exist."}, status=status.HTTP_404_NOT_FOUND)
-        wallet_data.delete()
-        return Response({"message": "Wallet information deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+    permission_classes = [permissions.IsAuthenticated, CanCreateWallet]
 
+    def get(self, request, id=None):
+        # Retrieve wallet by ID or the logged-in user's wallet
+        try:
+            if id:
+                # Admin can get any wallet by ID
+                if request.user.is_staff:
+                    wallet = wallet.objects.get(id=id)
+                else:
+                    wallet = Wallet.objects.get(id=id, user=request.user)
+            else:
+                # Otherwise, get their own wallet
+                wallet = request.user.wallet
+        except Wallet.DoesNotExist:
+            return Response(
+                {"message": "Wallet not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = WalletSerializer(wallet)
+        return Response(
+            {"message": "Wallet information retrieved successfully.", "data": serializer.data},
+            status=status.HTTP_200_OK
+            )
+
+    
+    def delete(self, request):
+            """Block wallet deletion"""
+            return Response(
+                {"message": "Wallet deletion is not allowed."},
+                status=status.HTTP_405_METHOD_NOT_ALLOWED
+            )

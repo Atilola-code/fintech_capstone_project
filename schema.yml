@@ -1,0 +1,789 @@
+openapi: 3.0.3
+info:
+  title: SwiftBank Digital Banking
+  version: 1.0.0
+  description: Comprehensive API documentation for my banking system
+paths:
+  /transaction/{id}/:
+    get:
+      operationId: transaction_retrieve
+      summary: Retrieve a single transaction detail
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Transactions
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /transaction/admin/all/:
+    get:
+      operationId: transaction_admin_all_list
+      summary: 'Admin-only: list all transactions in the system'
+      tags:
+      - Transactions
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
+          description: ''
+  /transaction/create/:
+    post:
+      operationId: transaction_create_create
+      summary: Create a new transaction
+      tags:
+      - Transactions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionRequest'
+            examples:
+              CreateTransactionExample:
+                value:
+                  receiver: 2
+                  amount: '1000.00'
+                  transaction_type: debit
+                  description: Grocery payment
+                summary: Create Transaction Example
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TransactionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TransactionRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+              examples:
+                CreateTransactionExample:
+                  value:
+                    receiver: 2
+                    amount: '1000.00'
+                    transaction_type: debit
+                    description: Grocery payment
+                  summary: Create Transaction Example
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /transaction/history/:
+    get:
+      operationId: transaction_history_list
+      summary: View all transactions related to the logged-in user
+      tags:
+      - Transactions
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
+          description: ''
+  /users/kyc/upload/:
+    post:
+      operationId: users_kyc_upload_create
+      summary: Upload and verify user KYC
+      tags:
+      - User Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KYCVerificationRequest'
+            examples:
+              VerifyKYC:
+                value:
+                  KYC_status: true
+                summary: Verify KYC
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/KYCVerificationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/KYCVerificationRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+              examples:
+                VerifyKYC:
+                  value:
+                    KYC_status: true
+                  summary: Verify KYC
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /users/login/:
+    post:
+      operationId: users_login_create
+      summary: To Login user
+      tags:
+      - User Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+            examples:
+              LoginUser:
+                value:
+                  email: hammedolasupo03@gmail.com
+                  password: Abiona123#
+                summary: Login User
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              additionalProperties: {}
+          multipart/form-data:
+            schema:
+              type: object
+              additionalProperties: {}
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+              examples:
+                LoginUser:
+                  value:
+                    email: hammedolasupo03@gmail.com
+                    password: Abiona123#
+                  summary: Login User
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /users/register/:
+    post:
+      operationId: users_register_create
+      summary: To register new users
+      tags:
+      - User Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: {}
+            examples:
+              RegisterUser:
+                value:
+                  first_name: Hammed
+                  last_name: Olasupo
+                  email: hammedolasupo03@gmail.com
+                  password: Abiona123#
+                  confirm_password: Abiona123#
+                  role: customer
+                summary: Register User
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              additionalProperties: {}
+          multipart/form-data:
+            schema:
+              type: object
+              additionalProperties: {}
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+              examples:
+                RegisterUser:
+                  value:
+                    first_name: Hammed
+                    last_name: Olasupo
+                    email: hammedolasupo03@gmail.com
+                    password: Abiona123#
+                    confirm_password: Abiona123#
+                    role: customer
+                  summary: Register User
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+              examples:
+                RegisterUser:
+                  value:
+                    first_name: Hammed
+                    last_name: Olasupo
+                    email: hammedolasupo03@gmail.com
+                    password: Abiona123#
+                    confirm_password: Abiona123#
+                    role: customer
+                  summary: Register User
+          description: ''
+  /wallet/create/:
+    get:
+      operationId: wallet_create_retrieve
+      summary: Retrieve, update, or prevent deletion of user wallet
+      tags:
+      - Wallet Management
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wallet'
+              examples:
+                GetWalletInfo:
+                  value:
+                    message: Wallet information retrieved successfully.
+                    data:
+                      id: 1
+                      user: 3
+                      balance: '5000.00'
+                      currency: NGN
+                      created_at: '2025-10-06T12:00:00Z'
+                  summary: Get wallet info
+                  description: Example response for fetching wallet details
+                PatchWalletInfo:
+                  value:
+                    balance: '10000.00'
+                  summary: Patch wallet info
+                  description: Example of updating wallet fields
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+        '405':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+    patch:
+      operationId: wallet_create_partial_update
+      summary: Retrieve, update, or prevent deletion of user wallet
+      tags:
+      - Wallet Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedWalletRequest'
+            examples:
+              GetWalletInfo:
+                value:
+                  message: Wallet information retrieved successfully.
+                  data:
+                    id: 1
+                    user: 3
+                    balance: '5000.00'
+                    currency: NGN
+                    created_at: '2025-10-06T12:00:00Z'
+                summary: Get wallet info
+                description: Example response for fetching wallet details
+              PatchWalletInfo:
+                value:
+                  balance: '10000.00'
+                summary: Patch wallet info
+                description: Example of updating wallet fields
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedWalletRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedWalletRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wallet'
+              examples:
+                GetWalletInfo:
+                  value:
+                    message: Wallet information retrieved successfully.
+                    data:
+                      id: 1
+                      user: 3
+                      balance: '5000.00'
+                      currency: NGN
+                      created_at: '2025-10-06T12:00:00Z'
+                  summary: Get wallet info
+                  description: Example response for fetching wallet details
+                PatchWalletInfo:
+                  value:
+                    balance: '10000.00'
+                  summary: Patch wallet info
+                  description: Example of updating wallet fields
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+        '405':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+    delete:
+      operationId: wallet_create_destroy
+      description: Block wallet deletion
+      summary: Retrieve, update, or prevent deletion of user wallet
+      tags:
+      - Wallet Management
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wallet'
+              examples:
+                GetWalletInfo:
+                  value:
+                    message: Wallet information retrieved successfully.
+                    data:
+                      id: 1
+                      user: 3
+                      balance: '5000.00'
+                      currency: NGN
+                      created_at: '2025-10-06T12:00:00Z'
+                  summary: Get wallet info
+                  description: Example response for fetching wallet details
+                PatchWalletInfo:
+                  value:
+                    balance: '10000.00'
+                  summary: Patch wallet info
+                  description: Example of updating wallet fields
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+        '405':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /wallet/create/{id}/:
+    get:
+      operationId: wallet_create_retrieve_2
+      summary: Retrieve, update, or prevent deletion of user wallet
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Wallet Management
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wallet'
+              examples:
+                GetWalletInfo:
+                  value:
+                    message: Wallet information retrieved successfully.
+                    data:
+                      id: 1
+                      user: 3
+                      balance: '5000.00'
+                      currency: NGN
+                      created_at: '2025-10-06T12:00:00Z'
+                  summary: Get wallet info
+                  description: Example response for fetching wallet details
+                PatchWalletInfo:
+                  value:
+                    balance: '10000.00'
+                  summary: Patch wallet info
+                  description: Example of updating wallet fields
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+        '405':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+    patch:
+      operationId: wallet_create_partial_update_2
+      summary: Retrieve, update, or prevent deletion of user wallet
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Wallet Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedWalletRequest'
+            examples:
+              GetWalletInfo:
+                value:
+                  message: Wallet information retrieved successfully.
+                  data:
+                    id: 1
+                    user: 3
+                    balance: '5000.00'
+                    currency: NGN
+                    created_at: '2025-10-06T12:00:00Z'
+                summary: Get wallet info
+                description: Example response for fetching wallet details
+              PatchWalletInfo:
+                value:
+                  balance: '10000.00'
+                summary: Patch wallet info
+                description: Example of updating wallet fields
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedWalletRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedWalletRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wallet'
+              examples:
+                GetWalletInfo:
+                  value:
+                    message: Wallet information retrieved successfully.
+                    data:
+                      id: 1
+                      user: 3
+                      balance: '5000.00'
+                      currency: NGN
+                      created_at: '2025-10-06T12:00:00Z'
+                  summary: Get wallet info
+                  description: Example response for fetching wallet details
+                PatchWalletInfo:
+                  value:
+                    balance: '10000.00'
+                  summary: Patch wallet info
+                  description: Example of updating wallet fields
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+        '405':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+    delete:
+      operationId: wallet_create_destroy_2
+      description: Block wallet deletion
+      summary: Retrieve, update, or prevent deletion of user wallet
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Wallet Management
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wallet'
+              examples:
+                GetWalletInfo:
+                  value:
+                    message: Wallet information retrieved successfully.
+                    data:
+                      id: 1
+                      user: 3
+                      balance: '5000.00'
+                      currency: NGN
+                      created_at: '2025-10-06T12:00:00Z'
+                  summary: Get wallet info
+                  description: Example response for fetching wallet details
+                PatchWalletInfo:
+                  value:
+                    balance: '10000.00'
+                  summary: Patch wallet info
+                  description: Example of updating wallet fields
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+        '405':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+components:
+  schemas:
+    KYCVerificationRequest:
+      type: object
+      properties:
+        KYC_status:
+          type: boolean
+    PatchedWalletRequest:
+      type: object
+      properties:
+        currency:
+          type: string
+          minLength: 1
+          maxLength: 50
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        sender:
+          type: integer
+        receiver:
+          type: integer
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        transaction_type:
+          $ref: '#/components/schemas/TransactionTypeEnum'
+        description:
+          type: string
+          nullable: true
+        transaction_time:
+          type: string
+          format: date-time
+          readOnly: true
+        summary:
+          type: string
+          readOnly: true
+      required:
+      - amount
+      - id
+      - summary
+      - transaction_time
+      - transaction_type
+    TransactionRequest:
+      type: object
+      properties:
+        sender:
+          type: integer
+        receiver:
+          type: integer
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        transaction_type:
+          $ref: '#/components/schemas/TransactionTypeEnum'
+        description:
+          type: string
+          nullable: true
+      required:
+      - amount
+      - transaction_type
+    TransactionTypeEnum:
+      enum:
+      - credit
+      - debit
+      - transfer
+      type: string
+      description: |-
+        * `credit` - Credit
+        * `debit` - Debit
+        * `transfer` - Transfer
+    Wallet:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        balance:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,48}(?:\.\d{0,2})?$
+          readOnly: true
+        currency:
+          type: string
+          maxLength: 50
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        account_number:
+          type: string
+          readOnly: true
+      required:
+      - account_number
+      - balance
+      - created_at
+      - currency
+      - id
+      - updated_at
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

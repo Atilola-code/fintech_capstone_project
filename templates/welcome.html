@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome to SwiftBank Digital Banking</title>
+    <style>
+      body {
+        background-color: #f5f7fa;
+        font-family: "Poppins", sans-serif;
+        margin: 0;
+        padding: 0;
+        color: #333;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 40px auto;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+      }
+
+      .header {
+        background-color: #0066ff;
+        color: white;
+        text-align: center;
+        padding: 30px 20px;
+      }
+
+      .content {
+        padding: 30px;
+        line-height: 1.6;
+      }
+
+      .content h2 {
+        color: #0066ff;
+        margin-bottom: 10px;
+      }
+
+      .wallet {
+        background: #f1f5f9;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 15px;
+      }
+
+      h2 {
+        color: #0e7490;
+      }
+
+      .wallet p {
+        margin: 6px 0;
+        font-size: 15px;
+      }
+
+      .btn {
+        display: inline-block;
+        background-color: #0066ff;
+        color: white;
+        text-decoration: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        margin-top: 20px;
+        font-weight: bold;
+      }
+
+      .footer {
+        text-align: center;
+        background-color: #f0f4f8;
+        padding: 15px;
+        font-size: 13px;
+        color: #666;
+      }
+
+      .footer a {
+        color: #0066ff;
+        text-decoration: none;
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          margin: 20px;
+        }
+        .header h1 {
+          font-size: 20px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+
+      <div class="content">
+        <h2>Hello, {{ username }},</h2>
+        <p>
+          {{ description }}
+        </p>
+
+        <div class="wallet">
+        <p><strong>🏦 Account Number:</strong> {{ account_number }}</p>
+        <p><strong>💰 Current Balance:</strong> ₦{{ balance }}</p>
+        <p><strong>📅 Date Joined:</strong> {{ date_joined }}</p>
+      </div>
+
+      <p>
+        You can now send, receive, and manage your money effortlessly on our
+        secure SwiftBank platform 🚀
+      </p>
+        <p>
+          From seamless transactions to wallet management — we've
+          got you covered!
+        </p>
+
+        <a href="#" class="btn">Go to Dashboard</a>
+
+        <p style="margin-top: 20px; font-size: 14px; color: #777;">
+          If you didn't create an account with us, please ignore this email.
+        </p>
+      </div>
+
+      <div class="footer">
+        <p>&copy; {{ current_year|default:"2025" }} Fintech Digital Banking</p>
+        <p>
+          <a href="#">Privacy Policy</a> | <a href="#">Contact Support</a>
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
